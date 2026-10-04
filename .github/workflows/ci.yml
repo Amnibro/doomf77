@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gfortran libsdl2-dev binutils
+
+    - name: Compile DOOMF77
+      run: |
+        make clean
+        make
+
+    - name: Run headless smoke test (E1M1 warp)
+      run: |
+        SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy DOOM_WARP=1 DOOM_FAST=1 DOOM_TICS=100 ./doomf77
+
+    - name: Run headless all-maps warp test (E1M1 - E1M9)
+      run: |
+        for map in {1..9}; do
+          echo "Testing E1M$map..."
+          SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy DOOM_WARP=$map DOOM_FAST=1 DOOM_TICS=35 ./doomf77
+        done

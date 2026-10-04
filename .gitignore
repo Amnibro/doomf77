@@ -1,0 +1,9 @@
+# Build artifacts
+*.o
+doomf77
+
+# Screenshots and temp dumps
+shot*.ppm
+fin*.ppm
+*.tmp
+*.log
